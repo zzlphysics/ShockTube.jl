@@ -12,21 +12,30 @@ problem = ShockTubeProblem(
     geometry = geometry,
     left_state = left_state,
     right_state = right_state,
-    t_end = 0.01,    # Simulation end time
+    t_end = 0.1,    # Simulation end time
     γ = 1.4,        # Specific heat ratio
-    nx = 1000,       # Number of grid points
-    CFL = 0.6      # Time step size
+    nx = 500,       # Number of grid points
+    CFL = 0.1      # Time step size
 )
+
+# 选择组件
+solver = HLLC() #LaxFriedrichs HLL HLLC Roe
+bc = NeumannBoundary()
+recon = LinearReconstruction()  # 可以选择 LinearReconstruction() WENOReconstruction()
+integrator = RK3()  # 或者 RK3()  EulerForward
+
+# 运行模拟
+x, ρ, u, p = simulate(problem, solver, bc, recon, integrator)
 
 # Generate the x array for plotting
 x_arr = range(problem.geometry[1], stop=problem.geometry[2], length=problem.nx)
 
 # Run the numerical simulation using Lax-Friedrichs method
-x, ρ_num, u_num, p_num = simulate(problem, LaxFriedrichs())
+# x, ρ_num, u_num, p_num = simulate(problem, LaxFriedrichs())
 
 # Obtain the analytical solution from AnalyticalShockTube
 analytical_values = get_analytical_solution(problem, x_arr)
 
 # Compare the numerical and analytical solutions
-compare_solutions(x, ρ_num, u_num, p_num, analytical_values)
+compare_solutions(x, ρ, u, p, analytical_values)
 
